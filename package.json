@@ -1,7 +1,7 @@
 {
   "name": "iata-ssim",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@10.33.2",
   "description": "TypeScript parsers for IATA SSIM (Standard Schedules Information Manual) data formats. Currently implements Chapter 7 — Schedule Data Set (.ssim files). Zero dependencies; works in Node and browsers.",
   "author": "skhrvg",
