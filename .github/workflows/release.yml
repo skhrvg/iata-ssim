@@ -62,25 +62,37 @@ jobs:
       - name: Publish to npm (with provenance)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm publish --no-git-checks --provenance --access public
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.pkg.outputs.version }}"
+          if npm view "iata-ssim@$VERSION" version >/dev/null 2>&1; then
+            echo "iata-ssim@$VERSION already on npm — skipping."
+          else
+            pnpm publish --no-git-checks --provenance --access public
+          fi
 
       - name: Publish to GitHub Packages as @skhrvg/iata-ssim
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          VERSION="${{ steps.pkg.outputs.version }}"
           # Snapshot original state so we can roll back before pushing the bump.
           cp package.json package.json.bak
           cp .npmrc .npmrc.bak
-          # Rename to scoped form for the GitHub Packages registry.
-          node -e "const p=require('./package.json'); p.name='@skhrvg/iata-ssim'; require('fs').writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');"
           # Append scope + auth to project .npmrc (pnpm reads it automatically).
           # Quoted heredoc keeps ${NODE_AUTH_TOKEN} literal — npm/pnpm expands at read time.
           cat >> .npmrc <<'EOF'
           @skhrvg:registry=https://npm.pkg.github.com
           //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
           EOF
-          pnpm publish --no-git-checks --access public
+          if npm view "@skhrvg/iata-ssim@$VERSION" version >/dev/null 2>&1; then
+            echo "@skhrvg/iata-ssim@$VERSION already on GH Packages — skipping."
+          else
+            # Rename to scoped form for the GitHub Packages registry.
+            node -e "const p=require('./package.json'); p.name='@skhrvg/iata-ssim'; require('fs').writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');"
+            pnpm publish --no-git-checks --access public
+          fi
           # Restore original files so the bump step pushes a clean working tree.
           mv package.json.bak package.json
           mv .npmrc.bak .npmrc
