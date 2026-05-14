@@ -1,0 +1,10 @@
+Drop directory for bulk SSIM validation.
+
+Place any number of `.ssim` (or otherwise schedule-data-set–shaped) files in
+this directory, then run:
+
+    pnpm samples:validate         # compact summary
+    pnpm samples:validate:verbose # full issue detail with caret markers
+
+Files in this directory are git-ignored (see `.gitignore`), except this `.keep`
+sentinel.

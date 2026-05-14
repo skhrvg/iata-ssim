@@ -1,0 +1,53 @@
+/*
+ * The site-wide notice banner injected via the `layout-top` slot.
+ * VitePress's fixed-position navbar reads `--vp-layout-top-height` to offset
+ * itself below the banner — keep this in sync with Banner.vue's actual height.
+ */
+:root {
+  --vp-layout-top-height: 44px;
+}
+
+/* Default doc width slightly wider than the VitePress default. */
+.VPDoc:not(.has-sidebar) .container,
+.VPDoc.has-sidebar .container {
+  max-width: 1400px;
+}
+
+/*
+ * Playground: full-width layout.
+ *
+ * Rather than try to escape the constrained VitePress containers from inside
+ * (which fights specificity and creates surprising positioning bugs), widen
+ * every wrapper from .VPDoc down when the rendered page contains a .playground.
+ */
+.VPDoc:has(.playground),
+.VPDoc:has(.playground) .container,
+.VPDoc:has(.playground) .content,
+.VPDoc:has(.playground) .content-container {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.VPDoc:has(.playground) {
+  padding: 24px 32px !important;
+}
+
+.VPDoc:has(.playground) .content,
+.VPDoc:has(.playground) .content-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.VPDoc:has(.playground) .vp-doc {
+  padding: 0 !important;
+}
+
+.VPDoc:has(.playground) .aside,
+.VPDoc:has(.playground) .VPDocAside {
+  display: none !important;
+}
+
+.playground {
+  width: 100%;
+  box-sizing: border-box;
+}
