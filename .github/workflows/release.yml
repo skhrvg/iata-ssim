@@ -59,16 +59,14 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Publish to npm (with provenance)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm (OIDC trusted publisher, provenance auto)
         run: |
           set -euo pipefail
           VERSION="${{ steps.pkg.outputs.version }}"
           if npm view "iata-ssim@$VERSION" version >/dev/null 2>&1; then
             echo "iata-ssim@$VERSION already on npm — skipping."
           else
-            pnpm publish --no-git-checks --provenance --access public
+            pnpm publish --no-git-checks --access public
           fi
 
       - name: Publish to GitHub Packages as @skhrvg/iata-ssim
